@@ -1,0 +1,42 @@
+%%[
+SET @sub = RequestParameter('sub') 
+SET @email = RequestParameter('email')
+SET @Listid = "145043"
+SET @listemailexist = Lookup("_ListSubscribers","EmailAddress","ListID", @Listid,"EmailAddress", @email)
+]%%
+
+%%[if @listemailexist == @email Then]%%
+subscriber already exist
+%%[ELSE]%%
+<script runat="server">
+Platform.Load("core","1.1.5"); 
+var prox = new Script.Util.WSProxy();
+var options = {SaveOptions: [{'PropertyName': '*', SaveAction: 'UpdateAdd'}]};
+
+//getting values from AMPSCRIPT variables to SSJS variables
+var email = Variable.GetValue("@email");
+var subscriberkey = Variable.GetValue("@sub");
+
+function AddToSub(obj) {
+var props = { 
+SubscriberKey: subscriberkey,
+EmailAddress: email,
+Lists: [{
+ID: obj.listID,
+Status: 'Active' // to unsub = "Unsubscribed" to subscribe = "Active"
+}]
+};
+var data = prox.updateItem("Subscriber", props, options);
+return data.Results[0].StatusCode;
+}
+
+var myPubLists = [
+{mid:'100028881', listID:'145043'}
+];
+
+for (var i=0; i<myPubLists.length; i++) {
+var result = AddToSub(myPubLists[i]);
+Write("Subscriber has been added to the publication list");
+}
+</script>
+%%[ENDIF]%%
