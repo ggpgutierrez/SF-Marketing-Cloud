@@ -29,9 +29,10 @@ Status: 'Active' // to unsub = "Unsubscribed" to subscribe = "Active"
 var data = prox.updateItem("Subscriber", props, options);
 return data.Results[0].StatusCode;
 }
+//Include your MID account and listId
 
 var myPubLists = [
-{mid:'100028881', listID:'145043'}
+{mid:'xxxx', listID:'xxxx'}
 ];
 
 for (var i=0; i<myPubLists.length; i++) {
